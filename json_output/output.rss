@@ -1,0 +1,15 @@
+<rss version="2.0">
+  <channel>
+    <title> Feed Me - Kill Six Billion Demons</title>
+    <link>http://killsixbilliondemons.com/</link>
+    <description>This is a webcomic! It’s graphic novel style, meaning it’s meant to be read in large chunks, but you can subject yourself to the agony of reading it a couple pages a week!</description>
+    <language>en-us</language>
+    <item>
+      <title>Kill Six Billion Demons » KILL SIX BILLION DEMONS – Chapter 1</title>
+      <link>http://killsixbilliondemons.com/comic/kill-six-billion-demons-chapter-1/</link>
+      <author>Abbadon</author>
+      <enclosure url="http://killsixbilliondemons.com/wp-content/uploads/2013/04/ksbdcoverchapter1.jpg" length="0" type="image/jpg"/>
+      <guid>http://killsixbilliondemons.com/comic/kill-six-billion-demons-chapter-1/</guid>
+    </item>
+  </channel>
+</rss>
