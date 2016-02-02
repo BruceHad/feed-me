@@ -190,8 +190,6 @@ Usage:
     b: '2'
   }); // Output: <a>1</a><foo></foo><b>2</b>
 
-
-
 ## Six Billion Demons
 
 ### Scraping Pages
@@ -204,6 +202,8 @@ rss
       link: "http://killsixbilliondemons.com/"
       description: "This is a webcomic! It’s graphic novel style, meaning it’s meant to be read in large chunks, but you can subject yourself to the agony of reading it a couple pages a week!"
       item:[/* Comic pages */]
+      pubDate: today.toUTCString(),
+      lastBuildDate: today.toUTCString() //var today = new Date();
 
 The first item is at the following URL:
 
@@ -219,7 +219,9 @@ For each item, scrape the page to find the following information for the item ar
     $('#comic').find('img').attr('src'), 
     length, 
     type],
-  guid: $('#comic-wrap').attr('class')
+  guid: url,
+  pubDate: today.toUTCString() //K6BD doesn't have pubdate on page.
+
 
 Get the next url $('.comic-nav-next').attr('src') anchor. Scrape again.
 
