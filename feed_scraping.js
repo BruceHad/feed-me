@@ -13,14 +13,6 @@ var fs      = require('fs');
 var jstoxml = require('jstoxml');
 var app = express();
 
-// function formatDate(d){
-//   var y = ''+ d.getFullYear();
-//   var m = d.getMonth() > 9 ? d.getMonth() : '0' + d.getMonth() ;
-//   var d = d.getDate() > 9 ? d.getDate() : '0' + d.getDate();
-//   var dateString = y+m+d;
-//   return dateString;
-// }
-
 function addDays(d, days){
   d.setTime( d.getTime() + days * 86400000 );
   return d;
@@ -94,38 +86,48 @@ function buildRSS(items){
   var path = config.logPath+config.shortName+'.log';
   var log = items[items.length-1][1].link;
   log += '|'+ (config.tally);
-  fs.writeFile(path, log, function(err){
-      if(err) console.log(err);
-      else console.log('Log File successfully written!');
+  console.log(log);
+  fs.writeFile(path, log, function(error){
+      if(error) throw error;
+      console.log('Log File successfully written!');
   });
 }
 
 
 
 app.get('/scrape', function(req, res){
-  var url = config.firstURL;
-  var pageCount = config.pageCount;
-  var items = [];
+  var logFile = config.logPath+config.shortName+'.log';
+  var url, pageCount, items = [];
+
+  // Read log file and update config.
+  // Then call getHTML.
+  fs.readFile(logFile, "utf-8", function(error, res){
+    if(error) throw error;
+    var res = res.split('|');
+    config.firstURL = res[0];
+    config.tally = parseInt(res[1], 10);
+    console.log(config.tally);
+    getHTML(config.firstURL);
+  });
+
   function getHTML(url){
     // recursive
     // requests HTML from URL then gets next page and repeats
-    if(items.length >= pageCount){
+    if(items.length >= config.pageCount){
       buildRSS(items);
       res.send('Check your console');
     }
     else {
       request(url, function(error, response, html){
-        if(!error){
-          items.push(scrapePage(html, url));
-          url = getNext(html);
-          console.log(url);
-          getHTML(url);
-        }
-        else console.log("Error getting url:", url);
+        if(error) throw error;
+        items.push(scrapePage(html, url));
+        url = getNext(html);
+        console.log(items.length, url);
+        getHTML(url);
       });
     }
   }
-  getHTML(url);
+
 });
 
 app.listen('8081')

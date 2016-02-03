@@ -1,5 +1,7 @@
 - [x]Check the 'guid'.
 - [x]Separate 'config'.
+- [x]Read logfile to get next run.
+- [ ]Error handling in node.
 - [ ]Add tests.
 - [ ]Auto FTP to server.
 - [ ]Update the interface, make it possible to use from the webpage.
