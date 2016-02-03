@@ -2,23 +2,10 @@
 
 // http://killsixbilliondemons.com/comic/chapter-3/|41
 
-var config = {
-  firstURL:'http://killsixbilliondemons.com/comic/ksbd-2-1/',
-  pageCount: 2,
-  tally: 21,
-  title: 'FMv0.1 - Kill Six Billion Demons',
-  link: 'http://killsixbilliondemons.com/',
-  description: 'This is a webcomic! It’s graphic novel style, meaning it’s meant to be read in large chunks, but you can subject yourself to the agony of reading it a couple pages a week!',
-  language: "en-us",
-  shortName: 'K6BDv01',
-  outputPath: './output/',
-  logPath: './logs/',
-  publish: 'http://treerock.me/temp/'
-};
 
 var today = new Date();
 var epoch = new Date(0);
-
+var config = require('./config.js'); // separate config file
 var express = require('express');
 var request = require('request');
 var cheerio = require('cheerio');

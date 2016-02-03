@@ -6,10 +6,7 @@ However RSS doesn't work for this. The RSS feed only contains the most recent fe
 
 Most comics have a standard interface: The home page has the latest comic. And there are navigation links (to the first, previous, next and latest comic) that let you scan through the comics.
 
-This should be easy enough to scrape, and re-build an RSS feed.
-
-First iteration, should just go back to the start and build a full (up to some sensible maximum size) feed. Future iterations could break down that down so that, for example, a comic a day could be delivered to your inbox.
-
+This should be easy enough to scrape, and re-build an RSS feed and deliver that to the reader.
 
 ## Learn Node & Scraping
 
@@ -172,24 +169,6 @@ Navigate to
 
 > http://localhost:8081/scrape
 
-## Converting JSON to RSS
-
-https://github.com/davidcalhoun/jstoxml
-
-It seems quite easy to build a javascript object and convert to JSON. But I need the file in RSS/XML. So I'm going to try using jstoxml.
-
-Install:
-
-  npm install jstoxml
-
-Usage:
-
-  jstoxml.toXML({
-    a: '1',
-    foo: '',
-    b: '2'
-  }); // Output: <a>1</a><foo></foo><b>2</b>
-
 ## Six Billion Demons
 
 ### Scraping Pages
@@ -227,3 +206,20 @@ Get the next url $('.comic-nav-next').attr('src') anchor. Scrape again.
 
 ### Convert to RSS
 
+https://github.com/davidcalhoun/jstoxml
+
+It seems quite easy to build a javascript object and convert to JSON. But I need the file in RSS/XML. So I'm going to try using jstoxml.
+
+Install:
+
+  npm install jstoxml
+
+Usage:
+
+  jstoxml.toXML({
+    a: '1',
+    foo: '',
+    b: '2'
+  }); // Output: <a>1</a><foo></foo><b>2</b>
+
+### 'Require'
