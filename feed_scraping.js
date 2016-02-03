@@ -1,9 +1,11 @@
 "use strict";
 
+// http://killsixbilliondemons.com/comic/chapter-3/|41
+
 var config = {
-  firstURL:'http://killsixbilliondemons.com/comic/ksbd1-13/',
-  pageCount: 7,
-  tally: 14,
+  firstURL:'http://killsixbilliondemons.com/comic/ksbd-2-1/',
+  pageCount: 2,
+  tally: 21,
   title: 'FMv0.1 - Kill Six Billion Demons',
   link: 'http://killsixbilliondemons.com/',
   description: 'This is a webcomic! It’s graphic novel style, meaning it’s meant to be read in large chunks, but you can subject yourself to the agony of reading it a couple pages a week!',
@@ -51,7 +53,10 @@ function scrapePage(html, url){
       }
     },
     {description: $('.post-info').text() + $('.entry').text()},
-    {guid: url+Date.now()},
+    {_name: 'guid',
+      _content: url,
+      _attrs: {isPermaLink: false}
+    },
     {pubDate: addDays(epoch, config.tally).toUTCString()}
   ];
   config.tally += 1;
