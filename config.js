@@ -1,8 +1,9 @@
+//
 // http://killsixbilliondemons.com/comic/kill-six-billion-demons-chapter-4/|61
 
 var config = {
   firstURL:'http://killsixbilliondemons.com/comic/kill-six-billion-demons-chapter-1/', // Default (overwritten by log file)
-  pageCount: 20,
+  pageCount: 5,
   tally: 0, // Default (overwritten by log file)
   title: 'FMv0.1 - Kill Six Billion Demons',
   link: 'http://killsixbilliondemons.com/',

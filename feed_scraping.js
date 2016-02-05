@@ -1,8 +1,5 @@
 "use strict";
 
-// http://killsixbilliondemons.com/comic/chapter-3/|41
-
-
 var today = new Date();
 var epoch = new Date(0);
 var config = require('./config.js'); // separate config file
@@ -74,21 +71,21 @@ function buildRSS(items){
   }
   // Now format and save the data.
   var path = config.outputPath+config.shortName+'.rss';
-  fs.writeFile(
-    path,
+  fs.writeFile(path,
     jstoxml.toXML(rss, {header: false, indent: '  '}),
-    function(err){
-      if(err) console.log(err);
-      else console.log('Feed File successfully written!');
+    function(error){
+      if(error)
+        console.error('Error writing RSS file: ', error);
+      console.log('RSS File successfully written!');
   });
 
   //Write log
   var path = config.logPath+config.shortName+'.log';
-  var log = items[items.length-1][1].link;
+  var log = config.next;
   log += '|'+ (config.tally);
-  console.log(log);
   fs.writeFile(path, log, function(error){
-      if(error) throw error;
+      if(error)
+        console.error('Error writing log file: ', error);
       console.log('Log File successfully written!');
   });
 }
@@ -102,11 +99,14 @@ app.get('/scrape', function(req, res){
   // Read log file and update config.
   // Then call getHTML.
   fs.readFile(logFile, "utf-8", function(error, res){
-    if(error) throw error;
-    var res = res.split('|');
-    config.firstURL = res[0];
-    config.tally = parseInt(res[1], 10);
-    console.log(config.tally);
+    if(error || res.length == 0)
+      console.error('Error reading log file, use defaults instead: ', error);
+    else {
+      var res = res.split('|');
+      config.firstURL = res[0];
+      config.tally = parseInt(res[1], 10);
+    }
+    console.log(config.tally, config.firstURL);
     getHTML(config.firstURL);
   });
 
@@ -114,15 +114,17 @@ app.get('/scrape', function(req, res){
     // recursive
     // requests HTML from URL then gets next page and repeats
     if(items.length >= config.pageCount){
+      config.next = url;
       buildRSS(items);
       res.send('Check your console');
     }
     else {
       request(url, function(error, response, html){
-        if(error) throw error;
+        if(error)
+          console.error('Error requesting html: ', error);
         items.push(scrapePage(html, url));
+        console.log(config.tally, items.length, url);
         url = getNext(html);
-        console.log(items.length, url);
         getHTML(url);
       });
     }
