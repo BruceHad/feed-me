@@ -1,7 +1,5 @@
 "use strict";
 
-var today = new Date();
-var epoch = new Date(0);
 var config = require('./config.js'); // separate config file
 var express = require('express');
 var request = require('request');
@@ -9,6 +7,9 @@ var cheerio = require('cheerio');
 var fs      = require('fs');
 var jstoxml = require('jstoxml');
 var app = express();
+
+var today = new Date();
+var epoch = new Date(0);
 
 function addDays(d, days){
   d.setTime( d.getTime() + days * 86400000 );

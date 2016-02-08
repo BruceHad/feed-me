@@ -223,3 +223,59 @@ Usage:
   }); // Output: <a>1</a><foo></foo><b>2</b>
 
 ### 'Require'
+...
+
+### Testing
+
+http://thenodeway.io/posts/testing-essentials/
+http://mherman.org/blog/2015/09/10/testing-node-js-with-mocha-and-chai/
+http://mochajs.org/
+https://nodejs.org/api/assert.html
+http://sinonjs.org/
+
+
+'You write tests to inspire confidence that everything is working as expected.' Test clarity should be valued above all else. 
+Node values smaller, single purpose tools. So testing uses a collection of smaller tools:
+
+* A testing framework (Mocha, Vows, Intern)
+* An assertion library (Chai, Assert)
+* Stubs (Sinon)
+* Module control (Mockery, Rewire)
+
+Mocha a widely used test framework for node. It follows a setup/teardown pattern.
+
+    describe('yourModuleName', function() {
+      before(function(){
+        // The before() callback gets run before all tests in the suite. Do one-time setup here.
+      });
+      beforeEach(function(){
+        // The beforeEach() callback gets run before each test in the suite.
+      });
+      it('does x when y', function(){
+        // Now... Test!
+      });
+      after(function() {
+        // after() is run after all your tests have completed. Do teardown here.
+      });
+    });
+
+Assert type statements make it easier to write tests. The assertion library can help with that.
+
+    assert(object.isValid, 
+      'tests that this property is true, and throws an error if /
+      it is false');
+
+There are loads of assertion libraries, but node comes with it's own assertion suite.
+
+For more complicated tests, you have to simulate specific conditions. For this you might need to build stubs. Sinon can be used for this.
+
+    var callback = sinon.stub();
+    callback.withArgs(42).returns(1);
+    callback.withArgs(1).throws("TypeError");
+    
+    callback();   // No return value, no exception
+    callback(42); // Returns 1
+    callback(1);  // Throws TypeError
+
+Sinon has tools for create fake timers and 'argument matchers'. Should also look at 'Spies' and 'Mocks' for setting up environments and watching what goes on.
+
