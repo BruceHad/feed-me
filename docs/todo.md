@@ -2,7 +2,7 @@
 - [x]Separate 'config'.
 - [x]Read logfile to get next run.
 - [x]Error handling in node.
-- [ ]Add tests.
+- [x]Add tests.
 - [ ]Update the interface, make it possible to use from the webpage.
     - [ ]Learn a bit of express or use Vue.js
 - [ ]Auto FTP to server.

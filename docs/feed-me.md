@@ -279,3 +279,7 @@ For more complicated tests, you have to simulate specific conditions. For this y
 
 Sinon has tools for create fake timers and 'argument matchers'. Should also look at 'Spies' and 'Mocks' for setting up environments and watching what goes on.
 
+  npm install mocha chai --save-dev
+  
+
+
