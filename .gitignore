@@ -2,3 +2,4 @@
 *.rss
 .c9*
 ftp.js
+node_modules
