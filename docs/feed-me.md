@@ -281,5 +281,11 @@ Sinon has tools for create fake timers and 'argument matchers'. Should also look
 
   npm install mocha chai --save-dev
   
+## FTP & Promises
+
+http://blog.jonathanchannon.com/2014/03/22/using-node-and-ftp-with-promises/
+https://www.npmjs.com/package/ftpimp
+
+    npm install ftpimp --save
 
 

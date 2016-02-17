@@ -1,6 +1,7 @@
 "use strict";
 
 var config = require('./config.js'); // separate config file
+var ftp = require('./ftp.js');
 var express = require('express');
 var request = require('request');
 var cheerio = require('cheerio');
@@ -38,7 +39,7 @@ app.get('/scrape', function(req, res){
     console.log(config.tally, config.firstURL);
     getHTML();
   });
-  
+
   // (recursive) requests HTML from URL and add to items
   // Once items is full update config and buildRss
   var items = [];
@@ -59,7 +60,7 @@ app.get('/scrape', function(req, res){
       });
     }
   }
-  
+
   function scrapePage(html, url){
     var epoch = new Date(0); // hack(K6MD doesn't publish actual dates to copy.)
     var $ = cheerio.load(html);
@@ -84,7 +85,7 @@ app.get('/scrape', function(req, res){
     config.tally += 1;
     return item;
   }
-  
+
   // Build JSON from Items and convert to RSS
   // write to output .rss file
   function buildRSS(items){
@@ -110,14 +111,14 @@ app.get('/scrape', function(req, res){
         ]
       }
     };
-    
+
     for (var key in items){
       rss._content.channel.push({item: items[key]});
     }
-    
+
     // Now convert to RSS and save the data to file.
-    var feed_path = config.outputPath+config.shortName+'.rss';
-    fs.writeFile(feed_path,
+    var feedPath = config.outputPath+config.shortName+'.rss';
+    fs.writeFile(feedPath,
       jstoxml.toXML(rss, {header: false, indent: '  '}),
       function(error){
         if(error)
@@ -125,14 +126,15 @@ app.get('/scrape', function(req, res){
         console.log('RSS File successfully written!');
     });
     updateLog();
+    ftp.ftpStuff();
   }
-  
+
   //Write log file
   function updateLog(){
-    var log_path = config.logPath+config.shortName+'.log';
+    var logPath = config.logPath+config.shortName+'.log';
     var log = config.next;
     log += '|'+ (config.tally);
-    fs.writeFile(log_path, log, function(error){
+    fs.writeFile(logPath, log, function(error){
         if(error)
           console.error('Error writing log file: ', error);
         console.log('Log File successfully written!');

@@ -5,9 +5,10 @@
   "main": "server.js",
   "author": "Scotch",
   "dependencies": {
+    "cheerio": "latest",
     "express": "latest",
-    "request": "latest",
-    "cheerio": "latest"
+    "ftpimp": "^2.2.33",
+    "request": "latest"
   },
   "devDependencies": {
     "chai": "^3.5.0",
