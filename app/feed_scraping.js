@@ -20,47 +20,44 @@ function getNext(html){
   return $('.comic-nav-next').attr('href');
 }
 
+// Check and read logFile
+var logFile = config.outputPath+config.shortName+'.log';
+fs.readFile(logFile, "utf-8", function(error, res){
+  if(error || res.length == 0)
+    console.error('Error reading log file, use defaults instead: ', error);
+  else {
+    res = res.split('|');
+    config.firstURL = res[0];
+    config.tally = parseInt(res[1], 10);
+  }
+});
+
 app.get('/', function(req, res){
   res.send('Hello World!');
 });
 
 app.get('/scrape', function(req, res){
-
-  // Read log file and update config then get HTML for pages to be scraped.
-  var logFile = config.logPath+config.shortName+'.log';
-  fs.readFile(logFile, "utf-8", function(error, res){
-    if(error || res.length == 0)
-      console.error('Error reading log file, use defaults instead: ', error);
-    else {
-      res = res.split('|');
-      config.firstURL = res[0];
-      config.tally = parseInt(res[1], 10);
-    }
-    console.log(config.tally, config.firstURL);
-    getHTML();
-  });
+  var items = [];
 
   // (recursive) requests HTML from URL and add to items
   // Once items is full update config and buildRss
-  var items = [];
   function getHTML(){
-    var url = config.firstURL;
     if(items.length >= config.pageCount){
-      config.next = url;
+      config.next = config.firstURL;
       buildRSS(items);
       res.send('Check your console');
     }
     else {
-      request(url, function(error, response, html){
+      request(config.firstURL, function(error, response, html){
         if(error) console.error('Error requesting html: ', error);
-        items.push(scrapePage(html, url));
-        console.log(config.tally, items.length, url);
+        items.push(scrapePage(html, config.firstURL));
+        console.log(config.tally, items.length, config.firstURL);
         config.firstURL = getNext(html);
         getHTML();
       });
     }
   }
-
+  getHTML();
   function scrapePage(html, url){
     var epoch = new Date(0); // hack(K6MD doesn't publish actual dates to copy.)
     var $ = cheerio.load(html);
@@ -68,15 +65,16 @@ app.get('/scrape', function(req, res){
       {title: $('title').text()},
       {link: url},
       {author: $('.post-author').find('a').text()},
-      {_name: 'enclosure',
+      {
+        _name: 'enclosure',
         _attrs: {
           url: $('#comic').find('img').attr('src'),
           length: "0",
-          type: "image/jpg"
-        }
+          type: "image/jpg"}
       },
       {description: $('.post-info').text() + $('.entry').text()},
-      {_name: 'guid',
+      {
+        _name: 'guid',
         _content: url,
         _attrs: {isPermaLink: false}
       },
@@ -95,49 +93,50 @@ app.get('/scrape', function(req, res){
       _attrs: {version: "2.0", "xmlns:atom":"http://www.w3.org/2005/Atom"},
       _content: {
         channel: [
-          {title: config.title},
-          {link: config.link},
-          {description: config.description},
-          {language: config.language},
-          {pubDate: today.toUTCString()},
-          {lastBuildDate: today.toUTCString()},
-          {_name: "atom:link",
-            _attrs: {
-              href: config.publish + config.shortName+'.rss',
-              rel: "self",
-              type: "application/rss+xml"
-            }
-          }
-        ]
+        {title: config.title},
+        {link: config.link},
+        {description: config.description},
+        {language: config.language},
+        {pubDate: today.toUTCString()},
+        {lastBuildDate: today.toUTCString()},
+        {_name: "atom:link",
+        _attrs: {
+          href: config.publish + config.shortName+'.rss',
+          rel: "self",
+          type: "application/rss+xml"
+        }
       }
-    };
-
-    for (var key in items){
-      rss._content.channel.push({item: items[key]});
+      ]
     }
+  };
+
+  for (var key in items){
+    rss._content.channel.push({item: items[key]});
+  }
 
     // Now convert to RSS and save the data to file.
     var feedPath = config.outputPath+config.shortName+'.rss';
+    console.log(feedPath);
     fs.writeFile(feedPath,
       jstoxml.toXML(rss, {header: false, indent: '  '}),
       function(error){
         if(error)
           console.error('Error writing RSS file: ', error);
         console.log('RSS File successfully written!');
-    });
+      });
     updateLog();
-    ftp.ftpStuff();
+    // ftp.ftpStuff();
   }
 
   //Write log file
   function updateLog(){
-    var logPath = config.logPath+config.shortName+'.log';
+    var outputPath = config.outputPath+config.shortName+'.log';
     var log = config.next;
     log += '|'+ (config.tally);
-    fs.writeFile(logPath, log, function(error){
-        if(error)
-          console.error('Error writing log file: ', error);
-        console.log('Log File successfully written!');
+    fs.writeFile(outputPath, log, function(error){
+      if(error)
+        console.error('Error writing log file: ', error);
+      console.log('Log File successfully written!');
     });
   }
 
