@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1 Feed Me!
+  p A web scrapper and feed generator for #{link}
+  form(name="config", action="/scrape", method="post")
+    p
+    input(type="text", name="start-url", value="#{firstUrl}")
+    p
+    input(type="number", name="page-count", value="#{pageCount}")
+    p
+    input(type="number", name="tally", value="#{tally}")
+    p
+    input(type="submit", value="scrape")
