@@ -1,6 +1,3 @@
-//
-// http://killsixbilliondemons.com/comic/kill-six-billion-demons-chapter-4/|61
-
 var config = {
   firstUrl:'http://killsixbilliondemons.com/comic/kill-six-billion-demons-chapter-1/',
   tally: 0,
@@ -11,7 +8,14 @@ var config = {
   language: "en-us",
   shortName: 'K6BDv01',
   outputPath: './output/',
-  publish: 'http://treerock.me/temp/test/'
+  ftpPath: '/treerock/temp/K6BDv01.rss',
+  ftp: {
+    host: 'ftp.hooverville.biz',
+    pass: 'MNitria34yo!',
+    port: 21,
+    user: 'admin@hooverville.biz',
+    debug: false
+  }
 };
 
 module.exports = config;

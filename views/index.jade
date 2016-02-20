@@ -4,6 +4,9 @@ block content
   div(id="main")
     h1 Feed Me!
     p A web scrapper and feed generator for #[a(href="#{link}") #{title}].
+    if success
+      div(class="message")
+        p Feed updated!
     form(name="config", action="/scrape", method="post")
       fieldset
         label(for="start-url") Start Page
@@ -12,4 +15,6 @@ block content
         input(type="number", name="page-count", value="#{pageCount}")
         label(for="tally") Tally
         input(type="number", name="tally", value="#{tally}")
+        label(for="ftp") FTP?
+        input(type="checkbox", name="ftp", value="ftp")
       input(type="submit", value="scrape")

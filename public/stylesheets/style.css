@@ -20,9 +20,10 @@ a {
 
 fieldset {
   border: 0;
-  margin:0; padding: 10px;
+  margin:20px 0 0 0; padding: 10px;
+  border: 1px solid black;
   border-radius: 10px;
-  background-color: rgba(200, 200, 200, 0.2)
+  background-color: rgba(172, 172, 230, 0.2)
 }
 fieldset input {
   display: block;
@@ -53,4 +54,18 @@ input[type="submit"]{
   padding: 5px;
   font-size: large; text-transform: uppercase;
   float: right;
+}
+
+.message {
+  border: 1px solid #5b5a31;
+  border-radius: 10px;
+  margin: 5px 0px;
+  background-color: rgba(250,250,100, 0.5);
+  font-size: 30px;
+  text-align: center;
+  padding: 5px;
+  color: #5B5A31
+}
+.message p {
+  padding:0; margin:0;
 }
