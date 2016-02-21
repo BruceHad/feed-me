@@ -1,12 +1,10 @@
-This started with [Kill 6 Billion Demons](http://killsixbilliondemons.com/). I found the comic but wanted to read from the start. To do that manually I'd have to visit the website periodically, find the last cartoon I read, then start reading from there. Awkward enough to put me off.
+# Feed Me
 
-A feed reader would be great for this. Latest cartoons would be delivered to to my reader, and would sit waiting (alongside other content I subscribe to) to be read whenever I had the chance. The reader would keep track of what I've read, and I would have everything aggregated in one place, without having to visit the website directly.
+January 2016
 
-However RSS doesn't work for this. The RSS feed only contains the most recent few cartoons, so only works for new content. No way to go back and start reading from the start. Unless...
+_(Learning Project)_
 
-Most comics have a standard interface: The home page has the latest comic. And there are navigation links (to the first, previous, next and latest comic) that let you scan through the comics.
-
-This should be easy enough to scrape, and re-build an RSS feed and deliver that to the reader.
+Scraping a website and building an RSS feed from the results.
 
 ## Learn Node & Scraping
 
@@ -35,10 +33,9 @@ And from here on use _nodemon_ in place of the _node_ command. e.g.
 
   nodemon server.js
 
-Set up a NodeJS project and include dependencies.
+Set up a NodeJS project and include dependencies. e.g:
 
 package.json:
-
   {
     "name"         : "node-web-scrape",
     "version"      : "0.0.1",
@@ -66,9 +63,7 @@ What we want to do:
 6. Convert the extracted info to JSON.
 7. Write JSON to file.
 
-_ExpressJS_ is apparently a 'minimalist'web framework for Node.js.
-
-Once installed, it needs to be included in your script.
+_ExpressJS_ is apparently a 'minimalist'web framework for Node.js. Once installed, it needs to be included in your script.
 
   var express = require('express');
   var app = express();
@@ -88,8 +83,6 @@ Handler - callback function that is carried out.
 The do something will generally use the response object (res), which has a number of methods available. e.g. res.download(), res.end() or res.json().
 
 _Request_ is "designed to be the simplest way possible to make http calls".
-
-Example:
 
     var request = require('request');
     request('http://www.google.com', function (error, response, body) {
@@ -161,54 +154,21 @@ hello_scrapping.js:
       });
     });
 
-Start up the node server.
+Then start up the node server.
 
     node hello_scraping.js
+or
+    nodemon hello_scraping.js
 
 Navigate to 
 
 > http://localhost:8081/scrape
 
-## Six Billion Demons
+### Converting JS Object to XML
 
-### Scraping Pages
-
-For a basic RSS feed, we need the following elements for the channel.
-
-rss
-  channel version = "2.0"
-      title: "Kill Six Billion Demons"
-      link: "http://killsixbilliondemons.com/"
-      description: "This is a webcomic! It’s graphic novel style, meaning it’s meant to be read in large chunks, but you can subject yourself to the agony of reading it a couple pages a week!"
-      item:[/* Comic pages */]
-      pubDate: today.toUTCString(),
-      lastBuildDate: today.toUTCString() //var today = new Date();
-
-The first item is at the following URL:
-
-* http://killsixbilliondemons.com/comic/kill-six-billion-demons-chapter-1/
-
-For each item, scrape the page to find the following information for the item array.
-
-  title: $('title').text().
-  link: url
-  description: $(.post-info)
-  author: $('.post-author').find('a').text(),
-  enclosure: [
-    $('#comic').find('img').attr('src'), 
-    length, 
-    type],
-  guid: url,
-  pubDate: today.toUTCString() //K6BD doesn't have pubdate on page.
-
-
-Get the next url $('.comic-nav-next').attr('src') anchor. Scrape again.
-
-### Convert to RSS
+I need to build an RSS feed, which is XML based. jstoxml helps here.
 
 https://github.com/davidcalhoun/jstoxml
-
-It seems quite easy to build a javascript object and convert to JSON. But I need the file in RSS/XML. So I'm going to try using jstoxml.
 
 Install:
 
@@ -222,10 +182,90 @@ Usage:
     b: '2'
   }); // Output: <a>1</a><foo></foo><b>2</b>
 
-### 'Require'
-...
+## The Feed Me App
+
+Using express-generator to bootstrap the app.
+
+    npm install express-generator -g // install globally
+    express feed-me
+    cd feed-me
+    npm install // installs all basic dependencies
+    DEBUG=feed-me: * npm start // starts application
+
+Then I installed all the other dependencies I'm using for the scraper which updated the package.json file. I also amended the "start" command to use nodemon instead of node.
+
+    "scripts": {
+        "start": "nodemon ./bin/www"
+      }
+
+
+### FTP
+
+https://www.npmjs.com/package/ftpimp
+
+    npm install ftpimp --save
+
+Then:
+
+    cfg = {
+    host: 'ftp.host',
+    pass: 'ftp.pass',
+    port: 21,
+    user: 'ftp.user',
+    debug: false};
+
+    var FTP = require('ftpimp');
+    var ftp = FTP.create(cfg, false);
+    ftp.connect(function () {
+        ftp.put([feedPath, config.ftpPath], function (err, filename) {
+          if(err) console.log(err)
+          else console.log("FTPed");
+        });
+    });
+
+### App Structure
+
+The web app is browser based. The root "/" page contains a form that allows me to select some basic options for the scraping. Submitting the form calls the "/scrape" code, which:
+
+1. Repeat:
+    1. Downloads the HTML for the current page.
+    2. Scrapes the necessary data from the page.
+    3. Find the 'next' page.
+2. Builds JSON object containing the data need to build an RSS feed.
+3. Converts JSON to RSS and exports to file.
+4. Updates log.
+5. (Optional) FTP file to server.
+
+The scrape page redirects back to the root page on completion.
+
+### Scraping Pages
+
+For a basic RSS feed, we need the following elements for the channel. This information is stored in a JS object, then converted to XML (RSS) before being written to file.
+
+A rough outline of rssJson:
+  channel version = "2.0"
+      title: "Title"
+      link: "http://example.com/"
+      description: "Description"
+      item:[ // array of items scraped from HTML
+        {
+          title: $('title').text().
+          link: url
+          description: $(.post-info)
+          author: $('.post-author').find('a').text(),
+          enclosure: [
+            $('#comic').find('img').attr('src'), 
+            length, 
+            type],
+          guid: url,
+          pubDate: today.toUTCString()},
+        {...etc...}],
+      pubDate: today.toUTCString(),
+      lastBuildDate: today.toUTCString() //var today = new Date();
 
 ### Testing
+
+(Needs more work)
 
 http://thenodeway.io/posts/testing-essentials/
 http://mherman.org/blog/2015/09/10/testing-node-js-with-mocha-and-chai/
@@ -280,12 +320,4 @@ For more complicated tests, you have to simulate specific conditions. For this y
 Sinon has tools for create fake timers and 'argument matchers'. Should also look at 'Spies' and 'Mocks' for setting up environments and watching what goes on.
 
   npm install mocha chai --save-dev
-  
-## FTP & Promises
-
-http://blog.jonathanchannon.com/2014/03/22/using-node-and-ftp-with-promises/
-https://www.npmjs.com/package/ftpimp
-
-    npm install ftpimp --save
-
 
